@@ -1,0 +1,280 @@
+---
+title: "CLT Project 1"
+format: html
+editor: visual
+---
+
+# Central Limit Theorem Monte Carlo Investigation
+
+## Introduction
+
+This project investigates the Central Limit Theorem using Monte Carlo simulations. I simulated 10,000 sample means for several sample sizes from five different populations: a standard normal population, a six-sided die, an exponential population, a small binomial population, and a Cauchy population. I compared the simulated distributions of sample means with theoretical expectations using histograms, Q-Q plots, means, standard deviations, and standard errors.
+
+## Standard Normal Population
+
+The standard normal population is symmetric and already follows a normal distribution, with theoretical mean 0 and theoretical standard deviation 1. The theoretical standard error of a sample mean is 1/sqrt(n). The simulated means stayed close to 0, and the simulated standard deviations were close to the theoretical standard errors. Because the original population was already normal, the sampling distributions were approximately normal even for small sample sizes. The Q-Q plots became increasingly close to the reference line as the sample size increased.
+
+```{r}
+set.seed(7751)
+
+normal_population <- rnorm(
+  10000,
+  mean = 0,
+  sd = 1
+)
+
+normal_means_30 <- replicate(
+  10000,
+  mean(sample(normal_population, size = 30, replace = TRUE))
+)
+
+hist(
+  normal_means_30,
+  main = "Standard Normal Sample Means, n = 30",
+  xlab = "Sample Mean",
+  col = "lightgreen",
+  border = "white"
+)
+```
+
+```{r}
+qqnorm(
+  normal_means_30,
+  main = "Normal Q-Q Plot: n = 30",
+  pch = 16,
+  cex = 0.4
+)
+
+qqline(
+  normal_means_30,
+  col = "red"
+)
+```
+
+## Six-Sided Die Population
+
+A six-sided die population is discrete and approximately symmetric, with theoretical mean 3.5 and theoretical standard deviation sqrt(35 / 12), which is approximately 1.71. The theoretical standard error is sqrt(35 / 12) / sqrt(n). The simulated means stayed close to 3.5, and the simulated standard deviations closely matched the theoretical standard errors. The sampling distribution became approximately normal by about n = 30, and it was even closer to normal at n = 100, as shown by the histograms and Q-Q plots.
+
+```{r}
+set.seed(7751)
+
+die_population <- sample(
+  1:6,
+  size = 10000,
+  replace = TRUE
+)
+
+die_means_30 <- replicate(
+  10000,
+  mean(sample(die_population, size = 30, replace = TRUE))
+)
+
+hist(
+  die_means_30,
+  main = "Six-Sided Die Sample Means, n = 30",
+  xlab = "Sample Mean",
+  col = "lightgreen",
+  border = "white"
+)
+```
+
+```{r}
+qqnorm(
+  die_means_30,
+  main = "Six-Sided Die Q-Q Plot: n = 30",
+  pch = 16,
+  cex = 0.4
+)
+
+qqline(
+  die_means_30,
+  col = "red"
+)
+```
+
+## Exponential Population
+
+The exponential population is strongly right-skewed, with a theoretical mean of 1 and theoretical standard deviation of 1. Its theoretical standard error is 1 / sqrt(n). The simulated means stayed close to 1, and the simulated standard deviations became closer to the theoretical standard errors as the sample size increased. Because the original population was right-skewed, the sampling distribution became approximately normal more slowly than it did for the die population. The distribution was improving around n = 30 and looked more approximately normal at n = 100.
+
+```{r}
+set.seed(7751)
+
+exponential_population <- rexp(
+  10000,
+  rate = 1
+)
+
+exponential_means_30 <- replicate(
+  10000,
+  mean(sample(exponential_population, size = 30, replace = TRUE))
+)
+
+hist(
+  exponential_means_30,
+  main = "Exponential Sample Means, n = 30",
+  xlab = "Sample Mean",
+  col = "lightgreen",
+  border = "white"
+)
+```
+
+```{r}
+qqnorm(
+  exponential_means_30,
+  main = "Exponential Q-Q Plot: n = 30",
+  pch = 16,
+  cex = 0.4
+)
+
+qqline(
+  exponential_means_30,
+  col = "red"
+)
+```
+
+## Small Binomial Population
+
+The small binomial population counts the number of successes in 5 trials, where the probability of success is 0.10. Its theoretical mean is 0.5, and its theoretical standard deviation is sqrt(0.45), which is approximately 0.67. The theoretical standard error is sqrt(0.45) / sqrt(n). The original population was strongly right-skewed, so the sampling distributions were not approximately normal for the smaller sample sizes. The distribution became more nearly normal as the sample size increased, but it was most convincing around n = 100. The simulated means were close to 0.5, and the simulated standard deviations generally followed the theoretical standard errors.
+
+```{r}
+set.seed(7751)
+
+binomial_population <- rbinom(
+  10000,
+  size = 5,
+  prob = 0.10
+)
+
+binomial_means_30 <- replicate(
+  10000,
+  mean(sample(binomial_population, size = 30, replace = TRUE))
+)
+
+hist(
+  binomial_means_30,
+  main = "Small Binomial Sample Means, n = 30",
+  xlab = "Sample Mean",
+  col = "lightgreen",
+  border = "white"
+)
+```
+
+```{r}
+qqnorm(
+  binomial_means_30,
+  main = "Small Binomial Q-Q Plot: n = 30",
+  pch = 16,
+  cex = 0.4
+)
+
+qqline(
+  binomial_means_30,
+  col = "red"
+)
+```
+
+## Cauchy Population
+
+The Cauchy population is extremely heavy-tailed and contains very large positive and negative outliers. Unlike the other populations, the Cauchy distribution does not have a finite theoretical mean or standard deviation. Therefore, a theoretical standard error cannot be calculated, and the usual Central Limit Theorem does not apply. The simulated sample means were unstable because extreme observations could greatly change the mean. This shows why the mean is unreliable for a Cauchy population and why the CLT has important conditions.
+
+```{r}
+set.seed(7751)
+
+cauchy_population <- rcauchy(
+  10000,
+  location = 0,
+  scale = 1
+)
+
+cauchy_means_30 <- replicate(
+  10000,
+  mean(sample(cauchy_population, size = 30, replace = TRUE))
+)
+
+hist(
+  cauchy_means_30,
+  breaks = 100,
+  xlim = c(-10, 10),
+  main = "Cauchy Sample Means, n = 30",
+  xlab = "Sample Mean",
+  col = "lightgreen",
+  border = "white"
+)
+```
+
+```{r}
+qqnorm(
+  cauchy_means_30,
+  main = "Cauchy Q-Q Plot: n = 30",
+  pch = 16,
+  cex = 0.4
+)
+
+qqline(
+  cauchy_means_30,
+  col = "red"
+)
+```
+
+```{r}
+set.seed(7751)
+
+sample_sizes <- c(1, 5, 10, 20, 30, 50, 100)
+n_simulations <- 10000
+
+normal_population <- rnorm(10000, mean = 0, sd = 1)
+die_population <- sample(1:6, size = 10000, replace = TRUE)
+exponential_population <- rexp(10000, rate = 1)
+binomial_population <- rbinom(10000, size = 5, prob = 0.10)
+cauchy_population <- rcauchy(10000)
+
+make_summary_rows <- function(
+    population_name,
+    population,
+    theoretical_mean,
+    theoretical_sd
+) {
+  
+  do.call(
+    rbind,
+    lapply(sample_sizes, function(n) {
+      
+      sample_means <- replicate(
+        n_simulations,
+        mean(sample(population, size = n, replace = TRUE))
+      )
+      
+      data.frame(
+        population = population_name,
+        sample_size = n,
+        simulated_mean = mean(sample_means),
+        simulated_sd = sd(sample_means),
+        theoretical_mean = theoretical_mean,
+        theoretical_se = theoretical_sd / sqrt(n)
+      )
+    })
+  )
+}
+
+summary_table <- rbind(
+  make_summary_rows("Standard Normal", normal_population, 0, 1),
+  make_summary_rows("Six-Sided Die", die_population, 3.5, sqrt(35 / 12)),
+  make_summary_rows("Exponential", exponential_population, 1, 1),
+  make_summary_rows("Small Binomial", binomial_population, 0.5, sqrt(0.45)),
+  make_summary_rows("Cauchy", cauchy_population, NA, NA)
+)
+
+summary_table$simulated_mean <- round(summary_table$simulated_mean, 3)
+summary_table$simulated_sd <- round(summary_table$simulated_sd, 3)
+summary_table$theoretical_mean <- round(summary_table$theoretical_mean, 3)
+summary_table$theoretical_se <- round(summary_table$theoretical_se, 3)
+
+knitr::kable(
+  summary_table,
+  caption = "Monte Carlo Summary Across Sample Sizes"
+)
+```
+
+## Overall Conclusion
+
+Overall, the simulations supported the Central Limit Theorem for populations with finite means and finite variances. The standard normal population produced approximately normal sampling distributions immediately. The die population became approximately normal around n = 30, while the exponential and small binomial populations required larger sample sizes because they were skewed. In all of these cases, the simulated means stayed close to the theoretical population means, and the simulated standard deviations were close to the theoretical standard errors. However, n = 30 was not a universal rule for every population. The Cauchy population showed that the usual CLT does not apply when a population does not have a finite mean and variance.
