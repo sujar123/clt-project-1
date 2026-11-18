@@ -42,3 +42,7 @@ The simulations showed that:
 ## Report
 
 Open `CLT_Project_1.html` to view the completed report.
+
+## Live Report
+
+[View the rendered CLT report](https://sujar123.github.io/clt-project-1/)
